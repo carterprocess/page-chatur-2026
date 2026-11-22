@@ -65,7 +65,7 @@ export function initPlayers(root, store, actions) {
     const prev = rendered[i];
     if (prev.src !== wanted || (wanted && prev.videoOnly !== state.videoOnly)) {
       stage.innerHTML = wanted
-        ? `<iframe class="player${state.videoOnly ? ' video-only' : ''}" src="${escapeHtml(playerSrc(wanted, state.videoOnly))}" title="Player ${i + 1}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`
+        ? `<iframe class="player${state.videoOnly ? ' video-only' : ''}" src="${escapeHtml(playerSrc(wanted, state.videoOnly))}" title="Player ${i + 1}" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe>`
         : (inLayout ? PLACEHOLDER : '');
       rendered[i] = { src: wanted, videoOnly: state.videoOnly };
     }
