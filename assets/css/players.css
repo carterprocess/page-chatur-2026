@@ -1,0 +1,104 @@
+.players-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.players-grid[data-layout="2"] { grid-template-rows: 1fr; }
+.players-grid[data-layout="1"],
+.players-grid.has-max { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+
+.player-card {
+  display: grid;
+  grid-template-rows: 30px minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #070b12;
+  overflow: hidden;
+}
+
+.player-card.is-hidden { display: none; }
+.player-card.active-target { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(22, 199, 132, 0.5); }
+
+.player-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  min-width: 0;
+  background: #101722;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  font-size: 12px;
+  outline: none;
+}
+
+.player-bar:hover,
+.player-bar:focus-visible { background: #162030; }
+.active-target .player-bar { background: rgba(22, 199, 132, 0.15); }
+
+.slot-num {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #243047;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.active-target .slot-num { background: var(--accent); color: #04110b; }
+
+.slot-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.slot-flag { flex: none; color: var(--muted); font-size: 11px; }
+.slot-flag.warn { color: var(--warn); }
+
+.slot-tools { margin-left: auto; display: flex; gap: 2px; flex: none; }
+
+.tool {
+  width: 24px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tool:hover { background: #243047; color: var(--text); }
+
+.player-stage { position: relative; min-height: 0; overflow: hidden; background: #000; }
+
+/* O embed padrao traz o chat ao lado; o recorte (180% de largura) mostra so o video. */
+.player { display: block; width: 180%; height: 100%; border: 0; background: #000; }
+.player.video-only { width: 100%; }
+
+.player-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+  .players-grid,
+  .players-grid[data-layout="2"] { grid-template-columns: 1fr; grid-template-rows: repeat(var(--rows, 4), minmax(0, 1fr)); }
+  .players-grid[data-layout="2"] { --rows: 2; }
+  .players-grid[data-layout="1"] { --rows: 1; }
+}

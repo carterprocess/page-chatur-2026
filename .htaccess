@@ -1,36 +1,16 @@
-# TinyCB V2 .htaccess
-
-# Block sensitive scripts and config from public web access
-<FilesMatch "^(fetch-and-cache\.php|generate-sitemap\.php|config\.php)$">
-    Require all denied
-</FilesMatch>
-
-# Avoid content negotiation oddities
-Options -Multiviews
+# PAGECHAT: sem listagem de diretorios e sem acesso web a codigo/dados/cache.
+Options -Indexes -Multiviews
 DirectoryIndex index.php
 
-# --- Pretty URLs and Front Controller ---
+# Bloqueia leitura direta (a pasta api/ e assets/ continuam publicas).
 RewriteEngine On
-# Do not hardcode RewriteBase so this works in both domain root and subfolders.
+RewriteRule ^(src|config|data|var|tests)(/|$) - [F,L]
+RewriteRule (^|/)\.(git|ht) - [F,L]
+RewriteRule ^(README\.md|\.gitignore)$ - [F,L]
 
-# 1) Specific routes FIRST
-RewriteRule ^$ index.php [L,QSA]
-RewriteRule ^privacy/?$ privacy.php [L,QSA]
-RewriteRule ^admin/?$ admin.php [L,QSA]
-RewriteRule ^admin-ai-status/?$ admin-ai-status.php [L,QSA]
-RewriteRule ^model/([\w\-]+)$ model.php?username=$1 [L,QSA]
-RewriteRule ^live/?$ live.php [L,QSA]
-RewriteRule ^live/([\w\-]+)$ live.php?username=$1 [L,QSA]
-
-# 2) Serve static assets directly (whitelist extensions - future proof )
-#    (prevents CSS/JS/images/fonts from hitting index.php)
-RewriteCond %{REQUEST_URI} \.(?:css|js|mjs|map|json|png|jpe?g|gif|svg|webp|ico|bmp|avif|mp4|webm|ogg|pdf|woff2?|ttf|eot)$ [NC]
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^ - [L]
-
-# 3) If an actual file exists (fallback), serve it
-RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^ - [L]
-
-# 4) Catch-all: everything else to index.php (pagination/gender slugs/all else)
-RewriteRule ^ index.php [L,QSA]
+# Assets sempre revalidados (modulos ES nao tem versao no nome).
+<IfModule mod_headers.c>
+  <FilesMatch "\.(js|css)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

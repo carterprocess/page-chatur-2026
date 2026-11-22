@@ -1,4 +1,3 @@
-# Cache de runtime (atualizado automaticamente por refresh-cache.php)
-Chaturbate-affiliate-api-script/cache/cams_*.json
-Chaturbate-affiliate-api-script/cache/*.tmp
-Chaturbate-affiliate-api-script/cache/.refresh.lock
+# Cache de runtime (renovado automaticamente por CacheRefresher)
+/var/cache/*
+!/var/cache/.gitkeep
