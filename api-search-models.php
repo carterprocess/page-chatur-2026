@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 $libraryRoot = __DIR__ . '/Chaturbate-affiliate-api-script';
 $cacheDir = $libraryRoot . '/cache';
@@ -53,6 +54,9 @@ $requestedRegions = array_values(array_intersect($requestedRegions, $validRegion
 if (count($requestedRegions) === 0) {
     $requestedRegions = $validRegions;
 }
+
+require_once __DIR__ . '/refresh-cache.php';
+refresh_models_cache($requestedRegions, $cacheDir);
 
 $modelMap = [];
 foreach ($requestedRegions as $region) {
@@ -251,6 +255,7 @@ $results = array_slice($results, $offset, $limit);
 echo json_encode([
     'ok' => true,
     'updated_at' => date('c'),
+    'data_age_seconds' => cache_age_seconds($requestedRegions, $cacheDir),
     'count' => $total,
     'results' => $results
 ], JSON_UNESCAPED_SLASHES);

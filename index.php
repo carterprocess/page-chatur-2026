@@ -548,11 +548,13 @@
       try {
         let models = [];
         let modeLabel = 'busca';
+        let dataAge = null;
 
         if (onlyFavoritesEl.checked) {
           const data = await fetchJson(API_FAVORITES_URL + '?_=' + Date.now());
           if (!data.ok) throw new Error(data.error || 'Erro ao carregar favoritos');
           models = Array.isArray(data.models) ? data.models : [];
+          dataAge = data.data_age_seconds;
           modeLabel = 'favoritos';
         } else {
           const params = buildQueryFromFilters();
@@ -560,6 +562,7 @@
           const data = await fetchJson(API_SEARCH_URL + '?' + params.toString());
           if (!data.ok) throw new Error(data.error || 'Erro ao carregar dados');
           models = Array.isArray(data.results) ? data.results : [];
+          dataAge = data.data_age_seconds;
         }
 
         errorEl.style.display = 'none';
@@ -567,8 +570,11 @@
         renderList(false);
         updateSlotFlags();
 
+        const stale = dataAge !== null && dataAge !== undefined && dataAge > 300;
         statusEl.textContent = models.length + ' online (' + modeLabel + ') • player ativo: ' +
-          (activeSlot + 1) + ' • ' + new Date().toLocaleTimeString('pt-BR');
+          (activeSlot + 1) + ' • ' + new Date().toLocaleTimeString('pt-BR') +
+          (stale ? ' • ⚠ dados com ' + secondsToHuman(dataAge) + ' (falha ao atualizar)' : '');
+        statusEl.classList.toggle('stale', stale);
       } catch (err) {
         errorEl.textContent = 'Falha ao carregar: ' + err.message;
         errorEl.style.display = 'block';

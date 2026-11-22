@@ -37,6 +37,9 @@ if (count($followed) === 0) {
 
 $online = [];
 
+require_once __DIR__ . '/refresh-cache.php';
+refresh_models_cache($regions, $cacheDir);
+
 function extract_iframe_src($iframeHtml)
 {
     if (!is_string($iframeHtml) || $iframeHtml === '') {
@@ -110,6 +113,7 @@ usort($models, function ($a, $b) {
 echo json_encode([
     'ok' => true,
     'updated_at' => date('c'),
+    'data_age_seconds' => cache_age_seconds($regions, $cacheDir),
     'count' => count($models),
     'models' => $models
 ], JSON_UNESCAPED_SLASHES);
