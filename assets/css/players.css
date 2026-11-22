@@ -97,8 +97,12 @@
 }
 
 @media (max-width: 1100px) {
-  .players-grid,
-  .players-grid[data-layout="2"] { grid-template-columns: 1fr; grid-template-rows: repeat(var(--rows, 4), minmax(0, 1fr)); }
-  .players-grid[data-layout="2"] { --rows: 2; }
-  .players-grid[data-layout="1"] { --rows: 1; }
+  /* Celular: blocos quadrados, 2 x 2. */
+  .players-grid { height: auto; gap: 6px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: auto; }
+  .players-grid[data-layout="1"],
+  .players-grid.has-max { grid-template-columns: 1fr; }
+  .player-card { aspect-ratio: 1 / 1; }
+  .player-bar { gap: 4px; padding: 0 4px; }
+  .slot-flag { display: none; }
+  .tool { width: 22px; }
 }

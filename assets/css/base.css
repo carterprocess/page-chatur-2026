@@ -62,6 +62,6 @@ html, body {
 
 @media (max-width: 1100px) {
   html, body { overflow: auto; }
-  .layout { grid-template-columns: 1fr; grid-template-rows: 70vh auto; height: auto; }
-  .col-main { height: 70vh; border-right: 0; border-bottom: 1px solid var(--line); }
+  .layout { grid-template-columns: 1fr; grid-template-rows: auto auto; height: auto; }
+  .col-main { height: auto; padding: 6px; border-right: 0; border-bottom: 1px solid var(--line); }
 }
