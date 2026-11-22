@@ -47,9 +47,34 @@ final class ModelNormalizer
     private function extractIframeSrc(string $html): string
     {
         if ($html !== '' && preg_match('/src=["\']([^"\']+)["\']/i', $html, $m)) {
-            return html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            return $this->directEmbedUrl(html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         }
         return '';
+    }
+
+    /**
+     * A URL de afiliado (/in/?...) passa por 2 redirecionamentos ate /embed/<sala>/. Usar o destino
+     * final evita 3 requisicoes por player (rajadas de 4 players eram bloqueadas pelo servidor).
+     */
+    private function directEmbedUrl(string $src): string
+    {
+        $query = [];
+        parse_str((string)parse_url($src, PHP_URL_QUERY), $query);
+        $room = (string)($query['room'] ?? '');
+        if ($room === '' || !preg_match('/^[A-Za-z0-9_]+$/', $room)) {
+            return $src; // formato inesperado: mantem a URL original
+        }
+
+        $params = ['bgcolor' => $query['bgcolor'] ?? 'white'];
+        foreach (['campaign', 'tour', 'track'] as $key) {
+            if (isset($query[$key])) {
+                $params[$key] = $query[$key];
+            }
+        }
+        $params += ['disable_sound' => '0', 'join_overlay' => '1', 'room' => $room];
+        ksort($params);
+
+        return 'https://chaturbate.com/embed/' . $room . '/?' . http_build_query($params);
     }
 
     private function extractTokensRemaining(string $subject): ?int

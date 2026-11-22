@@ -1,4 +1,4 @@
-import { MAX_SLOTS } from '../config.js';
+import { MAX_SLOTS, PLAYER_STAGGER_MS } from '../config.js';
 import { escapeHtml, sameModel } from '../util.js';
 
 const ICONS = { reload: '&#8635;', max: '&#10530;', fullscreen: '&#9974;', open: '&#8599;', clear: '&#10005;' };
@@ -23,6 +23,15 @@ function cardHtml(i) {
 }
 
 const PLACEHOLDER = '<div class="player-placeholder">Escolha uma thumb na lista<br>para exibir neste player.</div>';
+
+// Fila de carregamento: cada iframe comeca PLAYER_STAGGER_MS depois do anterior.
+let queueEnd = 0;
+function staggered(fn) {
+  const now = Date.now();
+  const at = Math.max(now, queueEnd);
+  queueEnd = at + PLAYER_STAGGER_MS;
+  setTimeout(fn, at - now);
+}
 
 function playerSrc(src, videoOnly) {
   if (!videoOnly) return src;
@@ -64,10 +73,18 @@ export function initPlayers(root, store, actions) {
     const stage = card.querySelector('.player-stage');
     const prev = rendered[i];
     if (prev.src !== wanted || (wanted && prev.videoOnly !== state.videoOnly)) {
-      stage.innerHTML = wanted
-        ? `<iframe class="player${state.videoOnly ? ' video-only' : ''}" src="${escapeHtml(playerSrc(wanted, state.videoOnly))}" title="Player ${i + 1}" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe>`
-        : (inLayout ? PLACEHOLDER : '');
       rendered[i] = { src: wanted, videoOnly: state.videoOnly };
+      if (!wanted) {
+        stage.innerHTML = inLayout ? PLACEHOLDER : '';
+      } else {
+        stage.innerHTML = '<div class="player-placeholder">Carregando...</div>';
+        const { videoOnly } = state;
+        staggered(() => {
+          // So insere se o slot ainda quer exatamente este video.
+          if (rendered[i].src !== wanted || rendered[i].videoOnly !== videoOnly) return;
+          stage.innerHTML = `<iframe class="player${videoOnly ? ' video-only' : ''}" src="${escapeHtml(playerSrc(wanted, videoOnly))}" title="Player ${i + 1}" allow="autoplay; fullscreen" allowfullscreen referrerpolicy="no-referrer"></iframe>`;
+        });
+      }
     }
   }
 

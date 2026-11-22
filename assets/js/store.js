@@ -19,6 +19,21 @@ function initialState() {
   };
 }
 
+// Slots salvos por versoes antigas usam /in/?... (com redirecionamentos); converte para o embed direto.
+function toDirectEmbed(src) {
+  try {
+    const url = new URL(src);
+    const room = url.searchParams.get('room');
+    if (url.pathname !== '/in/' || !room || !/^\w+$/.test(room)) return src;
+    const p = new URLSearchParams({ bgcolor: url.searchParams.get('bgcolor') || 'white', disable_sound: '0', join_overlay: '1', room });
+    ['campaign', 'tour', 'track'].forEach((k) => url.searchParams.has(k) && p.set(k, url.searchParams.get(k)));
+    p.sort();
+    return EMBED_ORIGIN + 'embed/' + room + '/?' + p.toString();
+  } catch (_e) {
+    return src;
+  }
+}
+
 // Aceita apenas dados persistidos coerentes; ignora o resto.
 function sanitize(saved) {
   const out = {};
@@ -26,7 +41,7 @@ function sanitize(saved) {
     out.slots = Array.from({ length: MAX_SLOTS }, (_, i) => {
       const s = saved.slots[i];
       return s && typeof s.src === 'string' && s.src.startsWith(EMBED_ORIGIN)
-        ? { username: String(s.username || ''), src: s.src }
+        ? { username: String(s.username || ''), src: toDirectEmbed(s.src) }
         : emptySlot();
     });
   }
