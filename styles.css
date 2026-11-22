@@ -53,7 +53,7 @@ html, body {
   background: #070b12;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1fr 62px;
+  grid-template-rows: 30px minmax(0, 1fr);
   width: 100%;
   height: 100%;
   min-width: 0;
@@ -65,20 +65,96 @@ html, body {
   box-shadow: 0 0 0 1px rgba(22, 199, 132, 0.5);
 }
 
-.player-side {
-  border-left: 1px solid var(--line);
-  background: #101722;
-  cursor: pointer;
-  transition: background .15s ease, border-color .15s ease;
+.players-grid.has-max .player-card:not(.maximized) {
+  display: none;
 }
 
-.player-side:hover {
+.players-grid.has-max {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.player-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  background: #101722;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  font-size: 12px;
+  min-width: 0;
+  outline: none;
+}
+
+.player-bar:hover,
+.player-bar:focus-visible {
   background: #162030;
 }
 
-.player-side.active {
-  border-color: var(--accent);
+.active-target .player-bar {
   background: rgba(22, 199, 132, 0.15);
+}
+
+.slot-num {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #243047;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.active-target .slot-num {
+  background: var(--accent);
+  color: #04110b;
+}
+
+.slot-name {
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slot-flag {
+  flex: none;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.slot-flag.warn {
+  color: #f0b45a;
+}
+
+.slot-tools {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+  flex: none;
+}
+
+.tool {
+  width: 24px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tool:hover {
+  background: #243047;
+  color: var(--text);
 }
 
 .player-stage {
@@ -88,12 +164,17 @@ html, body {
   background: #000;
 }
 
+/* O embed padrao traz o chat ao lado; o recorte mostra so o video. */
 .player {
   width: 180%;
   height: 100%;
   border: 0;
   display: block;
   background: #000;
+}
+
+.player.video-only {
+  width: 100%;
 }
 
 .player-placeholder {
@@ -176,12 +257,63 @@ html, body {
   box-shadow: 0 0 0 1px rgba(25, 195, 125, 0.45);
 }
 
+.thumb-wrap {
+  position: relative;
+}
+
 .thumb {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
   background: #0a0d12;
+}
+
+.badges {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  gap: 3px;
+}
+
+.badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  text-transform: uppercase;
+}
+
+.badge-hd { color: var(--accent); }
+.badge-show { color: #f0b45a; }
+.badge-new { color: #6cb6ff; }
+
+.views {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.btn-primary {
+  border-color: var(--accent);
+  color: #d8f7ea;
+}
+
+#nameSearch {
+  margin-bottom: 8px;
 }
 
 .meta {
@@ -394,6 +526,11 @@ html, body {
   .layout {
     grid-template-columns: 1fr;
     grid-template-rows: 65vh 35vh;
+  }
+
+  .players-grid.has-max {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
   }
 
   .col-main {

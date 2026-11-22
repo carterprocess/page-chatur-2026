@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');
 
 $libraryRoot = __DIR__ . '/Chaturbate-affiliate-api-script';
 $cacheDir = $libraryRoot . '/cache';
@@ -93,6 +94,9 @@ foreach ($regions as $region) {
             'region' => $region,
             'gender' => $m['gender'] ?? '',
             'seconds_online' => (int)($m['seconds_online'] ?? 0),
+            'is_hd' => !empty($m['is_hd']),
+            'current_show' => $m['current_show'] ?? '',
+            'age' => isset($m['age']) ? (int)$m['age'] : null,
             'embed_src' => $embedSrc
         ];
     }
@@ -100,7 +104,7 @@ foreach ($regions as $region) {
 
 $models = array_values($online);
 usort($models, function ($a, $b) {
-    return ($a['seconds_online'] <=> $b['seconds_online']);
+    return ($b['num_users'] <=> $a['num_users']);
 });
 
 echo json_encode([
